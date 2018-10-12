@@ -108,6 +108,8 @@ type Config struct {
 
 	Databases int `toml:"databases"`
 
+	LoadFlushInterval int `toml:"load_flush_interval"`
+
 	DBName       string `toml:"db_name"`
 	DBPath       string `toml:"db_path"`
 	DBSyncCommit int    `toml:"db_sync_commit"`

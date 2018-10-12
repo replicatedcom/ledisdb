@@ -163,6 +163,11 @@ func (l *Ledis) LoadDump(r io.Reader) (*DumpHead, error) {
 
 	n := 0
 
+	flushn := 1024
+	if l.cfg.LoadFlushInterval > 0 {
+		flushn = l.cfg.LoadFlushInterval
+	}
+
 	for {
 		if err = binary.Read(rb, binary.BigEndian, &keyLen); err != nil && err != io.EOF {
 			return nil, err
@@ -192,7 +197,7 @@ func (l *Ledis) LoadDump(r io.Reader) (*DumpHead, error) {
 
 		wb.Put(key, value)
 		n++
-		if n%1024 == 0 {
+		if n%flushn == 0 {
 			if err = wb.Commit(); err != nil {
 				return nil, err
 			}

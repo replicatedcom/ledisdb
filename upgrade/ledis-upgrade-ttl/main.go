@@ -51,6 +51,12 @@ func main() {
 
 		it := db.RangeIterator(minK, maxK, store.RangeROpen)
 		num := 0
+
+		flushn := 1024
+		if db.cfg.LoadFlushInterval > 0 {
+			flushn = sb.cfg.LoadFlushInterval
+		}
+
 		for ; it.Valid(); it.Next() {
 			dt, k, t, err := decodeOldKey(uint8(i), it.RawKey())
 			if err != nil {
@@ -62,7 +68,7 @@ func main() {
 			wb.Put(newKey, it.RawValue())
 			wb.Delete(it.RawKey())
 			num++
-			if num%1024 == 0 {
+			if num%flushn == 0 {
 				if err := wb.Commit(); err != nil {
 					fmt.Printf("commit error :%s\n", err.Error())
 				}
